@@ -22,10 +22,6 @@ Before training the model, I performed some basic **EDA** to understand the data
 3. **Visualizations**: 
    - Histograms of pixel intensity values across Monet paintings and regular photos.
    - Comparisons of the RGB channels for photos and Monet paintings.
-  
-   Below is an example of one of the histograms showing the distribution of pixel values for the Monet paintings:
-   
-   ![Pixel Distribution](path-to-your-histogram.png)
 
 ### Data Cleaning
 
@@ -72,28 +68,51 @@ During the experiment, I ran several rounds of hyperparameter tuning to improve 
 
 ### Results
 
-Below are some samples of generated images after training for 100 epochs:
+# Hyperparameter Tuning and Training Summary
 
-![Generated Image 1](path-to-generated-image-1.png)
-![Generated Image 2](path-to-generated-image-2.png)
+In this section, I experimented with various combinations of batch sizes and learning rates to optimize the performance of the GAN. The goal was to achieve the lowest possible discriminator and generator loss, which would indicate better performance of the model in generating realistic images.
+Hyperparameter Combinations Tested:
 
-A table summarizing the discriminator and generator losses across different architectures and hyperparameter configurations:
+    Batch Sizes: 32, 64, 100
+    Learning Rates: 0.0001, 0.0002, 0.0003
+    Epochs: 10 for each combination
 
-| Model           | Epochs | Discriminator Loss | Generator Loss | Comments                            |
-|-----------------|--------|--------------------|----------------|-------------------------------------|
-| Initial Model   | 100    | 0.45               | 0.75           | Initial training run                |
-| Tuned Model 1   | 100    | 0.30               | 0.65           | Improved batch size and learning rate |
-| Tuned Model 2   | 100    | 0.25               | 0.60           | Best result with hyperparameter tuning |
+For each configuration, the generator and discriminator were trained and evaluated on their respective losses after each epoch. The generator loss measures how well it fools the discriminator, while the discriminator loss reflects its ability to distinguish between real and generated images.
+Results Overview:
 
-## Analysis and Lessons Learned
+| Batch Size | Learning Rate | Generator Loss | Discriminator Loss |
+|------------|---------------|----------------|--------------------|
+| 32         | 0.0001        | 19.7705        | 1.9051             |
+| 32         | 0.0002        | 25.0121        | 1.3033             |
+| 32         | 0.0003        | 31.3805        | 0.9867             |
+| 64         | 0.0001        | 14.8117        | 3.0773             |
+| 64         | 0.0002        | 19.6375        | 2.0161             |
+| 64         | 0.0003        | 22.8357        | 1.7054             |
+| 100        | 0.0001        | 14.7467        | 2.9294             |
+| 100        | 0.0002        | 19.6006        | 2.1460             |
+| 100        | 0.0003        | 22.0088        | 1.7817             |
 
-- **Mode Collapse**: During early experimentation, I observed mode collapse where the generator produced only a few types of images. This issue was mitigated by adjusting the learning rate and using a larger batch size.
-- **Batch Normalization**: Including batch normalization in the generator significantly improved the quality of generated images.
-- **Generator Loss Interpretation**: Lower generator loss did not always correlate with better image quality. Therefore, I relied on visual inspection of generated images to gauge progress.
-- **Future Improvements**: Further experimentation could be done by:
-  - Adding more layers to both the generator and discriminator.
-  - Trying different GAN variants like **WGAN** or **CycleGAN**.
-  - Training with a higher resolution dataset or progressively increasing resolution during training.
+## Key Observations:
+
+Learning Rate Impact:
+    Across all batch sizes, increasing the learning rate generally led to a decrease in discriminator loss, indicating that the discriminator became better at distinguishing real from generated images.
+    However, the generator loss increased with higher learning rates, which means the generator struggled more to fool the discriminator.
+
+Batch Size Impact:
+    A batch size of 100 with a learning rate of 0.0001 yielded the lowest overall generator loss (14.74) and discriminator loss (2.92). This suggests that a moderate batch size allowed for more stable training, balancing between the discriminator and generator performance.
+    Batch size 32 with a learning rate of 0.0003 resulted in the lowest discriminator loss (0.98), but it also had the highest generator loss (31.38), which suggests that the discriminator was overly strong, and the generator could not catch up effectively.
+
+## Best Performing Configuration:
+
+The best configuration in terms of a balance between generator and discriminator loss was:
+
+    Batch Size: 100
+    Learning Rate: 0.0001
+    This configuration resulted in a generator loss of 14.74 and a discriminator loss of 2.92, indicating a stable balance between the two networks.
+
+## Next Steps:
+
+For final image generation, the best-performing hyperparameter configuration (Batch Size: 100, Learning Rate: 0.0001) will be used. This combination ensures that the model achieves good performance without the generator or discriminator overpowering each other, which is crucial for producing high-quality images.
 
 ## Conclusion
 
